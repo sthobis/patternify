@@ -57,8 +57,3 @@ typings/
 # dotenv environment variables file
 .env
 
-# djm ignore file list
-build/
-uploads/
-server/config.js
-server/imgur.json
