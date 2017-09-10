@@ -1,2 +1,6 @@
-# patternify
-Create pattern
+# Patternify
+
+```
+npm install
+npm start
+```

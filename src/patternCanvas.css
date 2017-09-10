@@ -1,0 +1,53 @@
+.pattern-creator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main, sidebar {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+main {
+  padding: 3rem;
+}
+
+sidebar {
+  background-color: pink;
+}
+
+section label {
+  display: block;
+  font-weight: 600;
+}
+
+section input {
+  display: block;
+  width: 100%;
+  margin: 1rem 0 0 0;
+}
+
+section .input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+section .input-container span {
+  flex: 0 0 auto;
+  font-weight: 400;
+  margin-top: 1rem;
+}
+
+section .input-container input {
+  flex: 1 1 100%;
+  margin: 1rem 1rem 0 1rem;
+}
+
+section + section {
+  margin-top: 2rem;
+}
