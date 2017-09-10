@@ -113,15 +113,11 @@ class PatternCanvas extends Component {
         let posX = currentX + offsetX;
         let posY = currentY + offsetY;
 
-        if (angle !== 0) {
-          ctx.translate(posX, posY);
-          ctx.rotate(angle);
-          ctx.drawImage(this.canvasAssets[1], -(sizing / 2), -(sizing / 2), sizing, sizing);
-          ctx.rotate(-angle);
-          ctx.translate(-posX, -posY);
-        } else {
-          ctx.drawImage(this.canvasAssets[1], posX, posY, sizing, sizing);
-        }
+        ctx.translate(posX, posY);
+        ctx.rotate(angle);
+        ctx.drawImage(this.canvasAssets[1], -(sizing / 2), -(sizing / 2), sizing, sizing);
+        ctx.rotate(-angle);
+        ctx.translate(-posX, -posY);
 
         currentX += spacing;
         i++;
