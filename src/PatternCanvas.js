@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import sample from './assets/sample.png';
-import sampleMini from './assets/sample-mini.png';
+import { ChromePicker } from 'react-color';
 import './patternCanvas.css';
 
 class PatternCanvas extends Component {
@@ -8,22 +8,20 @@ class PatternCanvas extends Component {
   state = {
     width: 300,
     height: 500,
-    spacing: 50,
-    sizing: 50,
+    spacing: 100,
+    sizing: 100,
     rotation: 0,
+    background: '#fff8d3',
     readyToDraw: false,
-  }
-
-  constructor(props) {
-    super(props);
-  }
+    showColorPicker: false,
+  };
 
   componentDidMount() {
     window.onresize = this.resize;
     this.resize();
 
     this.canvasAssets = [];
-    const pattern = [sampleMini, sample];
+    const pattern = [sample];
     this.preloadImages(pattern, this.canvasAssets, this.drawCanvas);
   }
 
@@ -45,7 +43,7 @@ class PatternCanvas extends Component {
   }
 
   // preload images so it can be used synchronously on canvas
-  preloadImages(srcs, imgs, draw) {
+  preloadImages = (srcs, imgs, draw) => {
     let img;
     let remaining = srcs.length;
     const removeFinished = () => {
@@ -70,7 +68,8 @@ class PatternCanvas extends Component {
   drawCanvas = () => {
     const {
       width,
-      height
+      height,
+      background,
     } = this.state;
 
     const ctx = this.patternCanvas.getContext('2d');
@@ -80,7 +79,7 @@ class PatternCanvas extends Component {
       // base background color
       ctx.beginPath();
       ctx.rect(0, 0, width, height);
-      ctx.fillStyle = 'cyan';
+      ctx.fillStyle = background;
       ctx.fill();
 
       // pattern
@@ -89,7 +88,7 @@ class PatternCanvas extends Component {
   }
 
   // generate image pattern on canvas
-  patternize = (ctx) => {
+  patternize = ctx => {
     const {
       width,
       height,
@@ -104,7 +103,7 @@ class PatternCanvas extends Component {
 
     while(currentY <= height + spacing) {
       let i = 0;
-      let currentX = 0 - spacing;
+      currentX = 0 - spacing;
       let angle = (rotation % 360) * TO_RADIANS;
 
       while(currentX <= width + spacing) {
@@ -115,7 +114,7 @@ class PatternCanvas extends Component {
 
         ctx.translate(posX, posY);
         ctx.rotate(angle);
-        ctx.drawImage(this.canvasAssets[1], -(sizing / 2), -(sizing / 2), sizing, sizing);
+        ctx.drawImage(this.canvasAssets[0], -(sizing / 2), -(sizing / 2), sizing, sizing);
         ctx.rotate(-angle);
         ctx.translate(-posX, -posY);
 
@@ -127,15 +126,23 @@ class PatternCanvas extends Component {
   }
 
   changeSpacing = () => {
-    this.setState({ spacing: parseInt(this.inputSpacing.value) });
+    this.setState({ spacing: parseInt(this.inputSpacing.value, 10) });
   }
 
   changeSizing = () => {
-    this.setState({ sizing: parseInt(this.inputSizing.value) });
+    this.setState({ sizing: parseInt(this.inputSizing.value, 10) });
   }
 
   changeRotation = () => {
-    this.setState({ rotation: parseInt(this.inputRotation.value) });
+    this.setState({ rotation: parseInt(this.inputRotation.value, 10) });
+  }
+
+  changeBackground = color => {
+    this.setState({ background: color.hex });
+  }
+
+  toggleColorPicker = () => {
+    this.setState(prevState => ({ showColorPicker: !prevState.showColorPicker }));
   }
   
   render() {
@@ -145,6 +152,8 @@ class PatternCanvas extends Component {
       spacing,
       sizing,
       rotation,
+      background,
+      showColorPicker,
     } = this.state;
 
     const spacingRange = {
@@ -212,6 +221,33 @@ class PatternCanvas extends Component {
                 />
                 <span>{rotationRange.max}</span>
               </div>
+            </label>
+          </section>
+          <section>
+            <label>
+              Background Color:
+              <div className='picker-container'>
+                <span
+                  className='background-color'
+                  style={{
+                    backgroundColor: background
+                  }}
+                  onClick={this.toggleColorPicker}
+                />
+              </div>
+              {
+                showColorPicker &&
+                 <div>
+                  <div
+                    className='picker-overlay'
+                    onClick={this.toggleColorPicker}
+                  />
+                  <ChromePicker
+                    color={background}
+                    onChange={this.changeBackground}
+                  />
+                </div>
+              }
             </label>
           </section>
         </main>

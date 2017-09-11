@@ -50,8 +50,28 @@ section .input-container input {
   margin: 1rem 1rem 0 1rem;
 }
 
+section .picker-container {
+  margin: 1rem 0;
+}
+
+section .picker-container .background-color {
+  display: inline-block;
+  width: 3rem;
+  height: 2rem;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
 section + section {
   margin-top: 2rem;
+}
+
+.picker-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }
 
 @media (max-width: 960px) {
