@@ -1,9 +1,10 @@
 .pattern-creator {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 main, sidebar {
@@ -16,10 +17,23 @@ main, sidebar {
 
 main {
   padding: 3rem;
+  overflow-y: auto;
 }
 
 sidebar {
-  background-color: pink;
+}
+
+.two-column {
+  display: flex;
+}
+
+.two-column section {
+  flex: 0 0 50%;
+  margin: 0;
+}
+
+.two-column section label {
+  text-align: center;
 }
 
 section label {
@@ -33,37 +47,50 @@ section input {
   margin: 1rem 0 0 0;
 }
 
-section .input-container {
+section + section {
+  margin-top: 2rem;
+}
+
+.input-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-section .input-container span {
+.input-container span {
   flex: 0 0 auto;
   font-weight: 400;
   margin-top: 1rem;
 }
 
-section .input-container input {
+.input-container input {
   flex: 1 1 100%;
   margin: 1rem 1rem 0 1rem;
 }
 
-section .picker-container {
+.picker-container {
   margin: 1rem 0;
 }
 
-section .picker-container .background-color {
+.picker-container .background-color {
+  position: relative;
   display: inline-block;
-  width: 3rem;
-  height: 2rem;
-  border: 1px solid #ccc;
+  width: 100%;
+  height: 10rem;
+  border: 1px solid #ddd;
   cursor: pointer;
 }
 
-section + section {
-  margin-top: 2rem;
+.picker-container .background-color::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  content: '';
+  width: 100%;
+  height: 100%;
+  border: 5px solid #fff;
+  background-color: transparent;
+  box-sizing: border-box;
 }
 
 .picker-overlay {
@@ -74,8 +101,39 @@ section + section {
   left: 0;
 }
 
+.image-uploader {
+  display: block;
+  width: 100%;
+  height: 10rem;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  border: 1px solid #ddd;
+}
+
+.image-uploader input[type="file"] {
+  display: none;
+}
+
+.chrome-picker {
+  position: absolute;
+}
+
 @media (max-width: 960px) {
+
+  main {
+    padding: 1.5rem;
+  }
+
   .pattern-creator {
     flex-direction: column-reverse;
+  }
+
+  .chrome-picker {
+    left: 0;
+    right: 0;
+    top: 50%;
+    margin: -125px auto 0;
   }
 }

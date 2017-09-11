@@ -6,6 +6,7 @@ import './patternCanvas.css';
 class PatternCanvas extends Component {
 
   state = {
+    image: sample,
     width: 300,
     height: 500,
     spacing: 100,
@@ -19,10 +20,7 @@ class PatternCanvas extends Component {
   componentDidMount() {
     window.onresize = this.resize;
     this.resize();
-
-    this.canvasAssets = [];
-    const pattern = [sample];
-    this.preloadImages(pattern, this.canvasAssets, this.drawCanvas);
+    this.preloadImageAndDraw();
   }
 
   componentDidUpdate() {
@@ -43,23 +41,16 @@ class PatternCanvas extends Component {
   }
 
   // preload images so it can be used synchronously on canvas
-  preloadImages = (srcs, imgs, draw) => {
-    let img;
-    let remaining = srcs.length;
-    const removeFinished = () => {
-      remaining--;
-      if (remaining <= 0) {
-        this.setState({ readyToDraw: true });
-        draw();
-      }
-    }
+  preloadImageAndDraw = () => {
 
-    for (let i = 0; i < srcs.length; i++) {
-      img = new Image();
-      img.onload = removeFinished;
-      img.src = srcs[i];
-      imgs.push(img);
-    }
+    const img = new Image();
+    img.onload = () => {
+      this.setState({ readyToDraw: true }, () => {
+        this.drawCanvas();
+      });
+    };
+    img.src = this.state.image;
+    this.imageObj = img;
   }
 
   // draw canvas content
@@ -90,6 +81,7 @@ class PatternCanvas extends Component {
   // generate image pattern on canvas
   patternize = ctx => {
     const {
+      image,
       width,
       height,
       spacing,
@@ -114,7 +106,7 @@ class PatternCanvas extends Component {
 
         ctx.translate(posX, posY);
         ctx.rotate(angle);
-        ctx.drawImage(this.canvasAssets[0], -(sizing / 2), -(sizing / 2), sizing, sizing);
+        ctx.drawImage(this.imageObj, -(sizing / 2), -(sizing / 2), sizing, sizing);
         ctx.rotate(-angle);
         ctx.translate(-posX, -posY);
 
@@ -123,6 +115,17 @@ class PatternCanvas extends Component {
       }
       currentY += spacing;
     }
+  }
+
+  changeImage = (e) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const imageSrc = event.target.result;
+      this.setState({ image: imageSrc }, () => {
+        this.preloadImageAndDraw();
+      });
+    }
+    reader.readAsDataURL(e.target.files[0]);
   }
 
   changeSpacing = () => {
@@ -147,6 +150,7 @@ class PatternCanvas extends Component {
   
   render() {
     const {
+      image,
       width,
       height,
       spacing,
@@ -172,6 +176,54 @@ class PatternCanvas extends Component {
     return (
       <div className='pattern-creator'>
         <main>
+          <div className='two-column'>
+            <section>
+              <label>
+                Background :
+                <div className='picker-container'>
+                  <span
+                    className='background-color'
+                    style={{
+                      backgroundColor: background
+                    }}
+                    onClick={this.toggleColorPicker}
+                  />
+                </div>
+                {
+                  showColorPicker &&
+                   <div>
+                    <div
+                      className='picker-overlay'
+                      onClick={this.toggleColorPicker}
+                    />
+                    <ChromePicker
+                      color={background}
+                      onChange={this.changeBackground}
+                    />
+                  </div>
+                }
+              </label>
+            </section>
+            <section>
+              <label>
+                Image :
+                <div className='picker-container'>
+                  <label
+                    className='image-uploader'
+                    style={{
+                      backgroundImage: `url("${image}")`,
+                    }}
+                  >
+                    <input
+                      type="file"
+                      ref={el => this.inputFile = el}
+                      onChange={this.changeImage}
+                    />
+                  </label>
+                </div>
+              </label>
+            </section>
+          </div>
           <section>
             <label>
               Spacing : {spacing}
@@ -223,37 +275,8 @@ class PatternCanvas extends Component {
               </div>
             </label>
           </section>
-          <section>
-            <label>
-              Background Color:
-              <div className='picker-container'>
-                <span
-                  className='background-color'
-                  style={{
-                    backgroundColor: background
-                  }}
-                  onClick={this.toggleColorPicker}
-                />
-              </div>
-              {
-                showColorPicker &&
-                 <div>
-                  <div
-                    className='picker-overlay'
-                    onClick={this.toggleColorPicker}
-                  />
-                  <ChromePicker
-                    color={background}
-                    onChange={this.changeBackground}
-                  />
-                </div>
-              }
-            </label>
-          </section>
         </main>
-        <sidebar
-          ref={el => {this.canvasContainer = el}}
-        >
+        <sidebar ref={el => {this.canvasContainer = el}}>
           <canvas
             ref={el => {this.patternCanvas = el}}
             height={height + 'px'}
